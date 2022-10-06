@@ -1,0 +1,104 @@
+﻿@page "/aportes"
+@inject AportesBLL aportesBLL;
+
+<EditForm Model="lista">
+    <DataAnnotationsValidator />
+        <div class="card-header">
+            <h3>Consulta de Aportes</h3>
+        </div>
+
+        <div class="input-group">
+            <div class="col-2">
+                <label> Desde</label>
+                <div class="mb-3">
+                    <InputDate @bind-Value="FechaDesde" class="form-control" />
+                    <ValidationMessage For="@(() => FechaDesde)" />
+                </div>
+            </div>
+            <div class="col-2 mx-3">
+                <label> Hasta</label>
+                <div class="mb-3">
+                    <InputDate @bind-Value="FechaHasta" class="form-control" />
+                    <ValidationMessage For="@(() => FechaHasta)" />
+                </div>
+            </div>
+        </div>
+        <div class="input-group">
+            <div class="col-2 mx-3">
+                <div class="row">
+                    <select class="form-select">
+                        <option value="0" disabled> Seleccione una opcion</option>
+                        <option value="1">AporteId</option>
+                        <option value="2">Persona</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-2 mx-5">
+                <input type="text" class="form-control" @bind="Criterio">
+            </div>
+            <div class="col-2">
+                <div class="input-group-append">
+                    <button type="button" @onclick="Buscar" class="btn btn-outline-primary"><i
+                            class="oi oi-loop-circular" />Buscar</button>
+
+                </div>
+            </div>
+        </div>
+
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>AporteId</th>
+                    <th>Persona</th>
+                    <th>Monto</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var aporte in lista)
+                {
+                    <tr>
+                        <td>@aporte.AporteId</td>
+                        <td>@aporte.Persona</td>
+                        <td>@aporte.Monto</td>
+                        <td><a href="empleado/@aporte.AporteId">Ver</a></td>
+                    </tr>
+                    total += aporte.Monto;
+                }
+
+            </tbody>
+
+                <h3>Conteo = @joha</h3>
+                <h3>Total = @total</h3>
+            
+        </table>
+    
+</EditForm>
+
+@code
+{
+    public string Filtro { get; set; } = "";
+
+    public string Criterio { get; set; } = "";
+    public int joha = 0;
+    public float? total = 0;
+
+    public DateTime FechaDesde { get; set; } = DateTime.Now;
+
+    public DateTime FechaHasta { get; set; } = DateTime.Now;
+
+    public Aportes aporte { get; set; } = new Aportes();
+
+    public List<Aportes> lista { get; set; } = new List<Aportes>();
+
+    public void Buscar()
+    {
+        lista = aportesBLL.GetList(x => (x.fecha >= FechaDesde) && (x.fecha <= FechaHasta));
+        joha = lista.Count();
+
+    }
+
+
+}
